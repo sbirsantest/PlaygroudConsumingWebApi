@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Repository
 {
-    public class OrganisationRepository
+    public class OrganisationRepository : IOrganisationRepository
     {
         private readonly IWebApiExecutor _webApiExecutor;
 

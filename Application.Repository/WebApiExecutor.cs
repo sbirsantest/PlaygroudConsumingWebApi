@@ -17,10 +17,10 @@ namespace Application.Repository
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public WebApiExecutor(string baseUrl, HttpClient httpClient)
+        public WebApiExecutor(IHttpClientFactory httpClientFactory)
         {
-            _baseUrl = baseUrl;
-            _httpClient = httpClient;
+            _baseUrl = "http://localhost:5000/api"; // #sob: move this to config file and provide it to the default exising confi
+            _httpClient = httpClientFactory.CreateClient();
 
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

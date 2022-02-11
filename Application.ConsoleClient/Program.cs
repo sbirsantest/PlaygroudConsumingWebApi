@@ -1,4 +1,6 @@
 ﻿using Application.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,20 +11,26 @@ namespace Application.ConsoleClient
     {
         static async Task Main(string[] args)
         {
-            WebApiExecutor webApiExecutor = new("http://localhost:5000/api", new HttpClient());
+            using IHost host = CreateHostBuilder(args).Build();
+            var webApiClient = ActivatorUtilities.CreateInstance<WebApiClient>(host.Services);
 
             #region Organisations
-
-            OrganisationRepository orgRepo = new(webApiExecutor);
-            var organisations = await orgRepo.GetAsync("organisations");
+            var organisations = await webApiClient.GetOrganisationsAsync();
             foreach (var org in organisations)
             {
                 Console.WriteLine(org.Name);
             }
-
             #endregion
-
-            Console.ReadKey();
         }
+
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+          Host.CreateDefaultBuilder(args)
+          .ConfigureServices((context, services) =>
+          {
+              services.AddHttpClient();
+              //services.AddTransient<IWebApiClient, WebApiClient>();
+              services.AddScoped<IWebApiExecutor, WebApiExecutor>();
+              services.AddScoped<IOrganisationRepository, OrganisationRepository>();
+          });
     }
 }
