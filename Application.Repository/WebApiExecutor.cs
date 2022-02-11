@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -16,11 +17,13 @@ namespace Application.Repository
         private readonly string _baseUrl;
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly IConfiguration _configuration;
 
-        public WebApiExecutor(IHttpClientFactory httpClientFactory)
+        public WebApiExecutor(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
-            _baseUrl = "http://localhost:5000/api"; // #sob: move this to config file and provide it to the default exising confi
             _httpClient = httpClientFactory.CreateClient();
+            _configuration = configuration;
+            _baseUrl = _configuration.GetValue<string>("WebApiClient:WebApiBaseUrl");
 
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
